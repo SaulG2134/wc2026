@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback } from 'react'
 import { C } from './constants.js'
 import { apiFetch, mapStandings, mapMatches } from './api.js'
 import { loadUserData, saveUserData } from './lib/userData.js'
-import ApiSetup  from './components/ApiSetup.jsx'
 import Nav       from './components/Nav.jsx'
 import Home      from './pages/Home.jsx'
 import Groups    from './pages/Groups.jsx'
@@ -10,10 +9,7 @@ import Matches   from './pages/Matches.jsx'
 import Hub       from './pages/Hub.jsx'
 import Predictor from './pages/Predictor.jsx'
 
-const ENV_KEY = import.meta.env.VITE_API_KEY || ''
-
 export default function App() {
-  const [apiKey,      setApiKey]      = useState(ENV_KEY)
   const [tab,         setTab]         = useState('home')
   const [groups,      setGroups]      = useState([])
   const [matches,     setMatches]     = useState([])
@@ -34,19 +30,19 @@ export default function App() {
   }, [])
 
   // ── Save to Supabase whenever followed or preds change ───────────────────
-  // Only runs after initial load to avoid overwriting saved data with empty state
   useEffect(() => {
     if (!dataLoaded) return
     saveUserData(followed, preds)
   }, [followed, preds, dataLoaded])
 
-  const fetchAll = useCallback(async (key) => {
+  // ── Fetch match + standings data via serverless function ─────────────────
+  const fetchAll = useCallback(async () => {
     setLoading(true)
     setError(null)
     try {
       const [standingsData, matchesData] = await Promise.all([
-        apiFetch('/competitions/WC/standings', key),
-        apiFetch('/competitions/WC/matches',   key),
+        apiFetch('/v4/competitions/WC/standings'),
+        apiFetch('/v4/competitions/WC/matches'),
       ])
       setGroups(mapStandings(standingsData))
       setMatches(mapMatches(matchesData))
@@ -59,13 +55,10 @@ export default function App() {
   }, [])
 
   useEffect(() => {
-    if (!apiKey) return
-    fetchAll(apiKey)
-    const t = setInterval(() => fetchAll(apiKey), 60_000)
+    fetchAll()
+    const t = setInterval(fetchAll, 60_000)
     return () => clearInterval(t)
-  }, [apiKey, fetchAll])
-
-  if (!apiKey) return <ApiSetup onConnect={setApiKey} />
+  }, [fetchAll])
 
   const live = matches.filter(m => m.status === 'live')
 

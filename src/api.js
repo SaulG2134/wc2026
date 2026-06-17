@@ -1,15 +1,12 @@
 import { NORM } from './constants.js'
 
-const BASE = '/fda/v4'
-
 // ── Normalise team names coming from the API ──────────────────────────────────
 export const norm = n => NORM[n] || n
 
 // ── Generic fetch wrapper ─────────────────────────────────────────────────────
-export async function apiFetch(path, key) {
-  const res = await fetch(`${BASE}${path}`, {
-    headers: { 'X-Auth-Token': key },
-  })
+// Calls our Vercel serverless function which holds the API key server-side
+export async function apiFetch(path) {
+  const res = await fetch(`/api/football?path=${encodeURIComponent(path)}`)
   if (!res.ok) {
     const txt = await res.text().catch(() => '')
     throw new Error(`${res.status}: ${txt || res.statusText}`)
