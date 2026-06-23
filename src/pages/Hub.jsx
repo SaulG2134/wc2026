@@ -91,9 +91,9 @@ function GroupTable({ group }) {
     <div style={{ background: C.card2, borderRadius: 10, border: `1px solid ${C.border}`, overflow: 'hidden', marginBottom: 12 }}>
       <div style={{ background: C.border, padding: '8px 14px', display: 'flex', alignItems: 'center', gap: 8 }}>
         <span style={{ fontSize: 11, fontWeight: 800, color: 'white', background: C.accent, borderRadius: 4, padding: '1px 7px' }}>
-          {group.id}
+          {group.id.replace('Group ', '')}
         </span>
-        <span style={{ fontSize: 12, fontWeight: 700, color: C.muted }}>Group {group.id}</span>
+        <span style={{ fontSize: 12, fontWeight: 700, color: C.muted }}>Group {group.id.replace('Group ', '')}</span>
       </div>
       <div style={{ padding: '0 14px 10px' }}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 32px 28px 28px 28px 36px 36px', gap: 0, padding: '6px 0 4px', borderBottom: `1px solid ${C.border}` }}>

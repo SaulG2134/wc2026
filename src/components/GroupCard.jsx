@@ -9,9 +9,9 @@ export default function GroupCard({ group, compact = false }) {
       {/* Header */}
       <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:12, paddingBottom:10, borderBottom:`1px solid ${C.border}` }}>
         <div style={{ width:26, height:26, borderRadius:7, background:C.accent, color:'#000', fontWeight:800, fontSize:13, display:'flex', alignItems:'center', justifyContent:'center' }}>
-          {group.id}
+          {group.id.replace('Group ', '')}
         </div>
-        <span style={{ fontWeight:700, fontSize:compact?13:15 }}>Group {group.id}</span>
+        <span style={{ fontWeight:700, fontSize:compact?13:15 }}>{group.id}</span>
       </div>
 
       {/* Column headers */}

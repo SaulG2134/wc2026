@@ -1,24 +1,60 @@
 import { useState, useEffect, useCallback } from 'react'
 import { C } from './constants.js'
-import { apiFetch, mapStandings, mapMatches } from './api.js'
-import { loadUserData, saveUserData } from './lib/userData.js'
+import { apiFetch, mapStandings, mapMatches, mapKnockout } from './api.js'
+import { loadUserData, saveUserData, migrateAnonData } from './lib/userData.js'
+import { supabase } from './lib/supabase.js'
 import Nav       from './components/Nav.jsx'
 import Home      from './pages/Home.jsx'
 import Groups    from './pages/Groups.jsx'
 import Matches   from './pages/Matches.jsx'
 import Hub       from './pages/Hub.jsx'
 import Predictor from './pages/Predictor.jsx'
+import Bracket   from './pages/Bracket.jsx'
 
 export default function App() {
   const [tab,         setTab]         = useState('home')
   const [groups,      setGroups]      = useState([])
   const [matches,     setMatches]     = useState([])
+  const [rounds,      setRounds]      = useState([])
   const [loading,     setLoading]     = useState(false)
   const [error,       setError]       = useState(null)
   const [lastUpdated, setLastUpdated] = useState(null)
   const [followed,    setFollowed]    = useState(new Set())
   const [preds,       setPreds]       = useState({})
   const [dataLoaded,  setDataLoaded]  = useState(false)
+  const [user,        setUser]        = useState(null)
+
+  // ── Auth state listener ───────────────────────────────────────────────────
+  useEffect(() => {
+    // Get initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null)
+    })
+
+    // Listen for sign-in / sign-out
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      const nextUser = session?.user ?? null
+      setUser(nextUser)
+
+      if (event === 'SIGNED_IN' && nextUser) {
+        // Migrate any anonymous data to the real account
+        await migrateAnonData(nextUser.id)
+        // Reload favorites under the new identity
+        const { followed: f, preds: p } = await loadUserData()
+        setFollowed(f)
+        setPreds(p)
+      }
+
+      if (event === 'SIGNED_OUT') {
+        // Clear user data and go home
+        setFollowed(new Set())
+        setPreds({})
+        setTab('home')
+      }
+    })
+
+    return () => subscription.unsubscribe()
+  }, [])
 
   // ── Load user data from Supabase on first mount ──────────────────────────
   useEffect(() => {
@@ -46,6 +82,7 @@ export default function App() {
       ])
       setGroups(mapStandings(standingsData))
       setMatches(mapMatches(matchesData))
+      setRounds(mapKnockout(matchesData))
       setLastUpdated(new Date())
     } catch (e) {
       setError(e.message)
@@ -54,19 +91,46 @@ export default function App() {
     }
   }, [])
 
+  const hasLive = matches.some(m => m.status === 'live')
+
   useEffect(() => {
     fetchAll()
-    const t = setInterval(fetchAll, 60_000)
+    // Poll every 30s during live games, 60s otherwise
+    const interval = hasLive ? 30_000 : 60_000
+    const t = setInterval(fetchAll, interval)
     return () => clearInterval(t)
-  }, [fetchAll])
+  }, [fetchAll, hasLive])
 
   const live = matches.filter(m => m.status === 'live')
 
   return (
     <div style={{ minHeight:'100vh', background:C.bg, color:'white', fontFamily:"-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" }}>
+      <style>{`
+        @keyframes fadeUp {
+          from { opacity: 0; transform: translateY(12px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        .tab-content { animation: fadeUp 0.25s ease forwards; }
+
+        .grid-2col      { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+        .grid-3col      { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+        .grid-2col-wide { display:grid; grid-template-columns:1fr 1fr; gap:24px; }
+
+        @media (max-width: 768px) {
+          .grid-2col      { grid-template-columns: 1fr !important; }
+          .grid-3col      { grid-template-columns: 1fr 1fr !important; }
+          .grid-2col-wide { grid-template-columns: 1fr !important; }
+          .hero-title     { font-size: 40px !important; }
+          .hero-inner     { padding: 28px 20px 24px !important; }
+        }
+        @media (max-width: 480px) {
+          .grid-3col { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
       <Nav
         tab={tab} setTab={setTab}
         live={live} lastUpdated={lastUpdated} loading={loading}
+        user={user}
       />
 
       <main style={{ maxWidth:1200, margin:'0 auto', padding:'0 24px' }}>
@@ -76,11 +140,14 @@ export default function App() {
           </div>
         )}
 
-        {tab === 'home'      && <Home groups={groups} matches={matches} setTab={setTab} />}
-        {tab === 'matches'   && <Matches matches={matches} />}
-        {tab === 'groups'    && <Groups groups={groups} />}
-        {tab === 'hub'       && <Hub groups={groups} matches={matches} followed={followed} setFollowed={setFollowed} />}
-        {tab === 'predictor' && <Predictor matches={matches} preds={preds} setPreds={setPreds} />}
+        <div key={tab} className="tab-content">
+          {tab === 'home'      && <Home groups={groups} matches={matches} setTab={setTab} />}
+          {tab === 'matches'   && <Matches matches={matches} onRefresh={fetchAll} loading={loading} />}
+          {tab === 'groups'    && <Groups groups={groups} />}
+          {tab === 'hub'       && <Hub groups={groups} matches={matches} followed={followed} setFollowed={setFollowed} />}
+          {tab === 'bracket'   && <Bracket rounds={rounds} />}
+          {tab === 'predictor' && <Predictor matches={matches} groups={groups} />}
+        </div>
       </main>
     </div>
   )

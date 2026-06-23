@@ -15,9 +15,9 @@ function GroupPreview({ group, onView }) {
       <div style={{ padding:'10px 14px', borderBottom:`1px solid ${C.border}`, display:'flex', alignItems:'center', justifyContent:'space-between' }}>
         <div style={{ display:'flex', alignItems:'center', gap:8 }}>
           <div style={{ width:22, height:22, borderRadius:6, background:C.accent, color:'#000', fontWeight:800, fontSize:12, display:'flex', alignItems:'center', justifyContent:'center' }}>
-            {group.id}
+            {group.id.replace('Group ', '')}
           </div>
-          <span style={{ fontWeight:700, fontSize:13 }}>Group {group.id}</span>
+          <span style={{ fontWeight:700, fontSize:13 }}> {group.id}</span>
         </div>
         <span style={{ fontSize:10, color:C.dim, fontWeight:600, letterSpacing:.5 }}>PTS</span>
       </div>
@@ -195,7 +195,7 @@ export default function Home({ setTab, groups, matches }) {
         <div style={{ position:'absolute', top:-80, left:'30%', width:400, height:400, borderRadius:'50%', background:'radial-gradient(circle,rgba(0,200,255,.06) 0%,transparent 65%)', pointerEvents:'none' }} />
         <div style={{ position:'absolute', bottom:-100, right:-50, width:350, height:350, borderRadius:'50%', background:'radial-gradient(circle,rgba(0,80,255,.05) 0%,transparent 65%)', pointerEvents:'none' }} />
 
-        <div style={{ padding:'48px 48px 40px', position:'relative' }}>
+        <div className="hero-inner" style={{ padding:'48px 48px 40px', position:'relative' }}>
           {/* Top label */}
           <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:20 }}>
             <span style={{ fontSize:11, color:C.accent, fontWeight:700, letterSpacing:4 }}>🏆 FIFA WORLD CUP</span>
@@ -206,7 +206,7 @@ export default function Home({ setTab, groups, matches }) {
           <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-end', flexWrap:'wrap', gap:32 }}>
             {/* Left: title */}
             <div>
-              <h1 style={{ fontSize:64, fontWeight:900, margin:'0 0 12px', lineHeight:.95, letterSpacing:-2 }}>
+              <h1 className="hero-title" style={{ fontSize:64, fontWeight:900, margin:'0 0 12px', lineHeight:.95, letterSpacing:-2 }}>
                 <span style={{ display:'block', color:'white' }}>World Cup</span>
                 <span style={{ display:'block', background:'linear-gradient(90deg,#00c8ff 0%,#0055ff 100%)', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent' }}>
                   2026
@@ -284,19 +284,19 @@ export default function Home({ setTab, groups, matches }) {
               Live Now
             </h2>
           </div>
-          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
+          <div className="grid-2col">
             {live.slice(1).map(m => <MatchCard key={m.id} m={m} />)}
           </div>
         </div>
       )}
 
       {/* ── UPCOMING + RESULTS ── */}
-      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:24, marginBottom:32 }}>
+      <div className="grid-2col-wide" style={{ marginBottom:32 }}>
         {/* Upcoming */}
         <div>
           <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:14 }}>
             <h2 style={{ margin:0, fontSize:15, fontWeight:800, display:'flex', alignItems:'center', gap:8 }}>
-              <span style={{ color:C.accent }}>📅</span> Upcoming
+              Upcoming
             </h2>
             <button onClick={() => setTab('matches')} style={{ background:'none', border:'none', color:C.accent, cursor:'pointer', fontSize:12, fontWeight:600 }}>
               All matches →
@@ -311,7 +311,7 @@ export default function Home({ setTab, groups, matches }) {
         <div>
           <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:14 }}>
             <h2 style={{ margin:0, fontSize:15, fontWeight:800, display:'flex', alignItems:'center', gap:8 }}>
-              <span>⚡</span> Recent Results
+              Recent Results
             </h2>
             <button onClick={() => setTab('matches')} style={{ background:'none', border:'none', color:C.accent, cursor:'pointer', fontSize:12, fontWeight:600 }}>
               All results →
@@ -326,17 +326,17 @@ export default function Home({ setTab, groups, matches }) {
       {/* ── GROUP STANDINGS ── */}
       <div>
         <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:16 }}>
-          <h2 style={{ margin:0, fontSize:15, fontWeight:800 }}>📊 Group Standings</h2>
+          <h2 style={{ margin:0, fontSize:15, fontWeight:800 }}>Group Standings</h2>
           <button onClick={() => setTab('groups')} style={{ background:'none', border:'none', color:C.accent, cursor:'pointer', fontSize:12, fontWeight:600 }}>
             All 12 groups →
           </button>
         </div>
         {groups.length > 0 ? (
           <>
-            <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:12, marginBottom:12 }}>
+            <div className="grid-3col" style={{ marginBottom:12 }}>
               {groups.slice(0, 3).map(g => <GroupPreview key={g.id} group={g} onView={() => setTab('groups')} />)}
             </div>
-            <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:12 }}>
+            <div className="grid-3col">
               {groups.slice(3, 6).map(g => <GroupPreview key={g.id} group={g} onView={() => setTab('groups')} />)}
             </div>
           </>
