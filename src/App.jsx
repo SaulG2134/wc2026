@@ -35,7 +35,12 @@ export default function App() {
   const [tab,         setTab]         = useState('home')
   const [groups,      setGroups]      = useState([])
   const [matches,     setMatches]     = useState([])
-  const [rounds,      setRounds]      = useState([])
+  const [rounds,      setRounds]      = useState(() => {
+    try {
+      const cached = localStorage.getItem('wc26_bracket')
+      return cached ? JSON.parse(cached) : []
+    } catch { return [] }
+  })
   const [loading,     setLoading]     = useState(false)
   const [error,       setError]       = useState(null)
   const [lastUpdated, setLastUpdated] = useState(null)
@@ -103,7 +108,11 @@ export default function App() {
       setGroups(mapStandings(standingsData))
       setMatches(mapMatches(matchesData))
       const newRounds = mapKnockout(matchesData)
-      setRounds(prev => mergeRounds(prev, newRounds))
+      setRounds(prev => {
+        const merged = mergeRounds(prev, newRounds)
+        try { localStorage.setItem('wc26_bracket', JSON.stringify(merged)) } catch {}
+        return merged
+      })
       setLastUpdated(new Date())
     } catch (e) {
       setError(e.message)
