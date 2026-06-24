@@ -1,6 +1,7 @@
 import { C } from '../constants.js'
 import GroupCard from '../components/GroupCard.jsx'
 
+/** @param {{ groups: Array }} props */
 export default function Groups({ groups }) {
   return (
     <div style={{ padding:'32px 0' }}>

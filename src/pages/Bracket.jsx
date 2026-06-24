@@ -1,5 +1,25 @@
 import { C, F } from '../constants.js'
 
+// ── Loading skeleton ──────────────────────────────────────────────────────────
+function BracketSkeleton() {
+  const pulse = { background: `linear-gradient(90deg, ${C.card} 25%, ${C.border} 50%, ${C.card} 75%)`, backgroundSize: '200% 100%', animation: 'shimmer 1.4s infinite', borderRadius: 6 }
+  return (
+    <>
+      <style>{`@keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }`}</style>
+      <div style={{ display: 'flex', gap: 20, overflowX: 'auto', paddingBottom: 16 }}>
+        {[16, 8, 4, 2, 1].map((count, col) => (
+          <div key={col} style={{ minWidth: 220, display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <div style={{ ...pulse, height: 28, marginBottom: 4 }} />
+            {Array.from({ length: count }).map((_, i) => (
+              <div key={i} style={{ ...pulse, height: 72 }} />
+            ))}
+          </div>
+        ))}
+      </div>
+    </>
+  )
+}
+
 // ── Single match slot ─────────────────────────────────────────────────────────
 function MatchSlot({ m, isThird }) {
   if (!m) return <div style={{ height: 72, margin: '6px 0' }} />
@@ -154,13 +174,25 @@ function RoundColumn({ round, isLast }) {
 }
 
 // ── Main bracket page ─────────────────────────────────────────────────────────
-export default function Bracket({ rounds }) {
+/**
+ * @param {{ rounds: Array, loading: boolean }} props
+ */
+export default function Bracket({ rounds, loading }) {
   if (!rounds || rounds.length === 0) {
     return (
-      <div style={{ padding:'60px 0', textAlign:'center', color:C.muted }}>
-        <div style={{ fontSize:48, marginBottom:16 }}>🏆</div>
-        <p style={{ fontSize:15, marginBottom:8 }}>Knockout bracket not available yet.</p>
-        <p style={{ fontSize:13, color:C.dim }}>Bracket draws after the group stage ends.</p>
+      <div style={{ padding: '32px 0' }}>
+        <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:6 }}>
+          <span style={{ fontSize:28 }}>🏆</span>
+          <h1 style={{ margin:0, fontSize:32, fontWeight:900 }}>Bracket</h1>
+        </div>
+        <p style={{ color:C.muted, marginBottom:28, fontSize:14 }}>Knockout stage · updates automatically as results come in</p>
+        {loading ? <BracketSkeleton /> : (
+          <div style={{ textAlign:'center', color:C.muted, paddingTop: 40 }}>
+            <div style={{ fontSize:48, marginBottom:16 }}>🏆</div>
+            <p style={{ fontSize:15, marginBottom:8 }}>Knockout bracket not available yet.</p>
+            <p style={{ fontSize:13, color:C.dim }}>Bracket draws after the group stage ends.</p>
+          </div>
+        )}
       </div>
     )
   }

@@ -30,12 +30,10 @@ The live app is hosted at [wc-2026-rust.vercel.app](https://wc-2026-rust.vercel.
 If you want to run your own instance:
 
 ```bash
-git clone https://github.com/yourusername/wc-2026.git
-cd wc-2026
+git clone https://github.com/SaulG2134/wc2026.git
+cd wc2026
 npm install
 ```
-
-You will need your own API keys for [football-data.org](https://www.football-data.org), [Supabase](https://supabase.com), and [Groq](https://console.groq.com). Copy `.env.example` to `.env` and fill them in, then run:
 
 ```bash
 vercel dev

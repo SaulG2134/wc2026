@@ -252,6 +252,9 @@ function MatchPredictCard({ m, groups }) {
 }
 
 // ── Main page ─────────────────────────────────────────────────────────────────
+/**
+ * @param {{ matches: Array, groups: Array }} props
+ */
 export default function Predictor({ matches, groups = [] }) {
   const upcoming = matches.filter(m => m.status === 'upcoming')
 

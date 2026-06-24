@@ -9,6 +9,9 @@ const FILTERS = [
   { id:'upcoming', label:'Upcoming' },
 ]
 
+/**
+ * @param {{ matches: Array, onRefresh: Function, loading: boolean }} props
+ */
 export default function Matches({ matches, onRefresh, loading }) {
   const hasLive = matches.some(m => m.status === 'live')
   const [filter, setFilter] = useState(() => hasLive ? 'live' : 'upcoming')

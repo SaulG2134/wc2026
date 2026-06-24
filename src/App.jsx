@@ -1,35 +1,16 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { C } from './constants.js'
-import { apiFetch, mapStandings, mapMatches, mapKnockout } from './api.js'
+import { apiFetch, mapStandings, mapMatches, mapKnockout, mergeRounds } from './api.js'
 import { loadUserData, saveUserData, migrateAnonData } from './lib/userData.js'
 import { supabase } from './lib/supabase.js'
-import Nav       from './components/Nav.jsx'
+import Nav           from './components/Nav.jsx'
+import ErrorBoundary from './components/ErrorBoundary.jsx'
 import Home      from './pages/Home.jsx'
 import Groups    from './pages/Groups.jsx'
 import Matches   from './pages/Matches.jsx'
 import Hub       from './pages/Hub.jsx'
 import Predictor from './pages/Predictor.jsx'
 import Bracket   from './pages/Bracket.jsx'
-
-// Merge new rounds into old ones — never downgrade a real team name back to TBD
-function mergeRounds(oldRounds, newRounds) {
-  if (newRounds.length === 0) return oldRounds
-  const knownTeams = {}
-  for (const round of oldRounds) {
-    for (const m of round.matches) {
-      if (m.home !== 'TBD') knownTeams[m.id + '_home'] = m.home
-      if (m.away !== 'TBD') knownTeams[m.id + '_away'] = m.away
-    }
-  }
-  return newRounds.map(round => ({
-    ...round,
-    matches: round.matches.map(m => ({
-      ...m,
-      home: m.home === 'TBD' && knownTeams[m.id + '_home'] ? knownTeams[m.id + '_home'] : m.home,
-      away: m.away === 'TBD' && knownTeams[m.id + '_away'] ? knownTeams[m.id + '_away'] : m.away,
-    }))
-  }))
-}
 
 export default function App() {
   const [tab,         setTab]         = useState('home')
@@ -197,14 +178,16 @@ export default function App() {
           </div>
         )}
 
-        <div key={tab} className="tab-content">
-          {tab === 'home'      && <Home groups={groups} matches={matches} setTab={setTab} />}
-          {tab === 'matches'   && <Matches matches={matches} onRefresh={fetchAll} loading={loading} />}
-          {tab === 'groups'    && <Groups groups={groups} />}
-          {tab === 'hub'       && <Hub groups={groups} matches={matches} followed={followed} setFollowed={setFollowed} />}
-          {tab === 'bracket'   && <Bracket rounds={rounds} />}
-          {tab === 'predictor' && <Predictor matches={matches} groups={groups} />}
-        </div>
+        <ErrorBoundary>
+          <div key={tab} className="tab-content">
+            {tab === 'home'      && <Home groups={groups} matches={matches} setTab={setTab} />}
+            {tab === 'matches'   && <Matches matches={matches} onRefresh={fetchAll} loading={loading} />}
+            {tab === 'groups'    && <Groups groups={groups} />}
+            {tab === 'hub'       && <Hub groups={groups} matches={matches} followed={followed} setFollowed={setFollowed} />}
+            {tab === 'bracket'   && <Bracket rounds={rounds} loading={loading} />}
+            {tab === 'predictor' && <Predictor matches={matches} groups={groups} />}
+          </div>
+        </ErrorBoundary>
       </main>
     </div>
   )
