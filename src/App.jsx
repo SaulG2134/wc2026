@@ -11,6 +11,26 @@ import Hub       from './pages/Hub.jsx'
 import Predictor from './pages/Predictor.jsx'
 import Bracket   from './pages/Bracket.jsx'
 
+// Merge new rounds into old ones — never downgrade a real team name back to TBD
+function mergeRounds(oldRounds, newRounds) {
+  if (newRounds.length === 0) return oldRounds
+  const knownTeams = {}
+  for (const round of oldRounds) {
+    for (const m of round.matches) {
+      if (m.home !== 'TBD') knownTeams[m.id + '_home'] = m.home
+      if (m.away !== 'TBD') knownTeams[m.id + '_away'] = m.away
+    }
+  }
+  return newRounds.map(round => ({
+    ...round,
+    matches: round.matches.map(m => ({
+      ...m,
+      home: m.home === 'TBD' && knownTeams[m.id + '_home'] ? knownTeams[m.id + '_home'] : m.home,
+      away: m.away === 'TBD' && knownTeams[m.id + '_away'] ? knownTeams[m.id + '_away'] : m.away,
+    }))
+  }))
+}
+
 export default function App() {
   const [tab,         setTab]         = useState('home')
   const [groups,      setGroups]      = useState([])
@@ -82,7 +102,8 @@ export default function App() {
       ])
       setGroups(mapStandings(standingsData))
       setMatches(mapMatches(matchesData))
-      setRounds(mapKnockout(matchesData))
+      const newRounds = mapKnockout(matchesData)
+      setRounds(prev => mergeRounds(prev, newRounds))
       setLastUpdated(new Date())
     } catch (e) {
       setError(e.message)
