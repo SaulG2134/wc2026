@@ -75,17 +75,17 @@ function AiResult({ result, m }) {
       {/* Predicted score */}
       <div style={{ textAlign: 'center', marginBottom: 20 }}>
         <div style={{ fontSize: 11, color: C.muted, fontWeight: 600, letterSpacing: 1, marginBottom: 8 }}>PREDICTED SCORE</div>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 16 }}>
-          <div style={{ textAlign: 'center' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12, flexWrap: 'nowrap' }}>
+          <div style={{ textAlign: 'center', minWidth: 0, flex: 1 }}>
             <div style={{ fontSize: 20 }}>{F[m.home] || '🏳️'}</div>
-            <div style={{ fontSize: 12, color: C.muted, marginTop: 4 }}>{m.home}</div>
+            <div style={{ fontSize: 11, color: C.muted, marginTop: 4, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{m.home}</div>
           </div>
-          <div style={{ fontSize: 40, fontWeight: 900, color: 'white', letterSpacing: 4 }}>
+          <div style={{ fontSize: 36, fontWeight: 900, color: 'white', letterSpacing: 2, whiteSpace: 'nowrap', flexShrink: 0 }}>
             {result.score.home} – {result.score.away}
           </div>
-          <div style={{ textAlign: 'center' }}>
+          <div style={{ textAlign: 'center', minWidth: 0, flex: 1 }}>
             <div style={{ fontSize: 20 }}>{F[m.away] || '🏳️'}</div>
-            <div style={{ fontSize: 12, color: C.muted, marginTop: 4 }}>{m.away}</div>
+            <div style={{ fontSize: 11, color: C.muted, marginTop: 4, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{m.away}</div>
           </div>
         </div>
       </div>
@@ -125,7 +125,7 @@ function AiResult({ result, m }) {
       {/* Likely scorers */}
       <div>
         <div style={{ fontSize: 11, color: C.muted, fontWeight: 600, letterSpacing: 1, marginBottom: 12 }}>LIKELY SCORERS</div>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+        <div className="predictor-scorers" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
           <div>
             <div style={{ fontSize: 11, color: C.muted, marginBottom: 8 }}>{m.home}</div>
             {result.scorers.home.map(s => (
@@ -197,14 +197,14 @@ function MatchPredictCard({ m, groups }) {
 
       {/* Teams */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, flex: 1 }}>
-          <span style={{ fontSize: 32 }}>{F[m.home] || '🏳️'}</span>
-          <span style={{ fontWeight: 700, fontSize: 16 }}>{m.home}</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, flex: 1, minWidth: 0 }}>
+          <span style={{ fontSize: 28, flexShrink: 0 }}>{F[m.home] || '🏳️'}</span>
+          <span style={{ fontWeight: 700, fontSize: 15, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{m.home}</span>
         </div>
-        <span style={{ fontSize: 14, fontWeight: 700, color: C.dim, padding: '0 16px' }}>VS</span>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, flex: 1, justifyContent: 'flex-end' }}>
-          <span style={{ fontWeight: 700, fontSize: 16 }}>{m.away}</span>
-          <span style={{ fontSize: 32 }}>{F[m.away] || '🏳️'}</span>
+        <span style={{ fontSize: 13, fontWeight: 700, color: C.dim, padding: '0 10px', flexShrink: 0 }}>VS</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, flex: 1, justifyContent: 'flex-end', minWidth: 0 }}>
+          <span style={{ fontWeight: 700, fontSize: 15, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textAlign: 'right' }}>{m.away}</span>
+          <span style={{ fontSize: 28, flexShrink: 0 }}>{F[m.away] || '🏳️'}</span>
         </div>
       </div>
 

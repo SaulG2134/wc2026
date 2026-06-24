@@ -62,7 +62,7 @@ function FeaturedMatch({ m, onView }) {
     <div style={{
       background:'linear-gradient(135deg,#0d2040 0%,#0a1830 50%,#0d2040 100%)',
       border:`1px solid ${live ? C.red+'88' : C.border}`,
-      borderRadius:16, padding:'28px 32px', marginBottom:28,
+      borderRadius:16, padding:'20px 18px', marginBottom:28,
     }}>
       <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:20 }}>
         <div style={{ display:'flex', alignItems:'center', gap:10 }}>
@@ -89,21 +89,21 @@ function FeaturedMatch({ m, onView }) {
         </div>
       </div>
 
-      <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', gap:16 }}>
+      <div className="featured-teams" style={{ display:'flex', alignItems:'center', justifyContent:'space-between', gap:16 }}>
         {/* Home team */}
-        <div style={{ flex:1, display:'flex', alignItems:'center', gap:14 }}>
-          <span style={{ fontSize:52 }}>{F[m.home] || '🏳️'}</span>
-          <div>
-            <div style={{ fontSize:22, fontWeight:800 }}>{m.home}</div>
-            <div style={{ fontSize:12, color:C.dim, marginTop:2 }}>Home</div>
+        <div style={{ flex:1, display:'flex', alignItems:'center', gap:10, minWidth:0 }}>
+          <span className="featured-flag" style={{ fontSize:36, flexShrink:0 }}>{F[m.home] || '🏳️'}</span>
+          <div style={{ minWidth:0 }}>
+            <div className="featured-name" style={{ fontSize:18, fontWeight:800, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{m.home}</div>
+            <div style={{ fontSize:11, color:C.dim, marginTop:2 }}>Home</div>
           </div>
         </div>
 
         {/* Score / VS */}
-        <div style={{ textAlign:'center', minWidth:100 }}>
+        <div className="featured-vs" style={{ textAlign:'center', flexShrink:0, padding:'0 8px' }}>
           {(live || done) && m.hs !== null ? (
             <>
-              <div style={{ fontSize:44, fontWeight:900, color: live ? C.red : 'white', lineHeight:1, letterSpacing:2 }}>
+              <div className="featured-score" style={{ fontSize:36, fontWeight:900, color: live ? C.red : 'white', lineHeight:1, letterSpacing:2, whiteSpace:'nowrap' }}>
                 {m.hs} – {m.as}
               </div>
               {live && m.minute && (
@@ -113,18 +113,18 @@ function FeaturedMatch({ m, onView }) {
           ) : (
             <>
               <div style={{ fontSize:13, color:C.dim, fontWeight:700, letterSpacing:2, marginBottom:4 }}>VS</div>
-              <div style={{ fontSize:13, color:C.accent, fontWeight:700 }}>{m.time}</div>
+              <div className="featured-vs-time" style={{ fontSize:13, color:C.accent, fontWeight:700 }}>{m.time}</div>
             </>
           )}
         </div>
 
         {/* Away team */}
-        <div style={{ flex:1, display:'flex', alignItems:'center', gap:14, justifyContent:'flex-end', flexDirection:'row-reverse' }}>
-          <span style={{ fontSize:52 }}>{F[m.away] || '🏳️'}</span>
-          <div style={{ textAlign:'right' }}>
-            <div style={{ fontSize:22, fontWeight:800 }}>{m.away}</div>
-            <div style={{ fontSize:12, color:C.dim, marginTop:2 }}>Away</div>
+        <div style={{ flex:1, display:'flex', alignItems:'center', gap:10, justifyContent:'flex-end', minWidth:0 }}>
+          <div style={{ textAlign:'right', minWidth:0 }}>
+            <div className="featured-name" style={{ fontSize:18, fontWeight:800, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap' }}>{m.away}</div>
+            <div style={{ fontSize:11, color:C.dim, marginTop:2 }}>Away</div>
           </div>
+          <span className="featured-flag" style={{ fontSize:36, flexShrink:0 }}>{F[m.away] || '🏳️'}</span>
         </div>
       </div>
 

@@ -122,10 +122,17 @@ export default function App() {
           .grid-2col-wide { grid-template-columns: 1fr !important; }
           .hero-title     { font-size: 40px !important; }
           .hero-inner     { padding: 24px 18px 20px !important; }
-          .stats-bar      { padding: 12px 18px !important; flex-wrap: wrap !important; gap: 8px !important; }
-          .stats-bar > div { padding: 0 12px !important; border-right: none !important; }
+          .stats-bar      { padding: 10px 16px !important; overflow-x: auto !important; flex-wrap: nowrap !important; }
+          .stats-bar > div { padding: 0 14px !important; flex-shrink: 0 !important; }
           .hub-layout     { grid-template-columns: 1fr !important; }
           .hero-live-box  { min-width: 0 !important; width: 100% !important; }
+          .featured-teams      { gap: 8px !important; }
+          .featured-flag       { font-size: 22px !important; }
+          .featured-name       { font-size: 14px !important; }
+          .featured-score      { font-size: 26px !important; }
+          .featured-vs         { padding: 0 2px !important; }
+          .featured-vs-time    { display: none !important; }
+          .predictor-scorers   { grid-template-columns: 1fr !important; }
         }
         @media (max-width: 480px) {
           .grid-3col { grid-template-columns: 1fr !important; }
