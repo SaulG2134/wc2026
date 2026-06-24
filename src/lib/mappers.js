@@ -42,22 +42,6 @@ function mapMatchRow(m) {
   const homeName = norm(m.homeTeam?.name || 'TBD')
   const awayName = norm(m.awayTeam?.name || 'TBD')
 
-  // Extract goals: { minute, scorer, type, team }
-  const goals = (m.goals || []).map(g => ({
-    minute:  g.minute + (g.injuryTime ? `+${g.injuryTime}` : ''),
-    scorer:  g.scorer?.name || '',
-    type:    g.type,   // NORMAL | OWN_GOAL | PENALTY
-    team:    norm(g.team?.name || ''),
-  }))
-
-  // Extract bookings: { minute, player, card, team }
-  const bookings = (m.bookings || []).map(b => ({
-    minute:  b.minute,
-    player:  b.player?.name || '',
-    card:    b.card,   // YELLOW_CARD | RED_CARD | YELLOW_RED_CARD
-    team:    norm(b.team?.name || ''),
-  }))
-
   return {
     id:       m.id,
     matchNum: m.matchday ?? null,
@@ -70,8 +54,6 @@ function mapMatchRow(m) {
     time:     d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', timeZone: 'America/New_York' }) + ' ET',
     venue:    m.venue || '',
     status,
-    goals,
-    bookings,
   }
 }
 

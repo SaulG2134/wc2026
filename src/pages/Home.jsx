@@ -1,5 +1,7 @@
+import { useState, useEffect } from 'react'
 import { C, F } from '../constants.js'
 import MatchCard from '../components/MatchCard.jsx'
+import { fetchMatchEvents } from '../api.js'
 
 // ── Group preview card ────────────────────────────────────────────────────────
 function GroupPreview({ group, onView }) {
@@ -58,6 +60,16 @@ function FeaturedMatch({ m, onView }) {
   if (!m) return null
   const live = m.status === 'live'
   const done = m.status === 'finished'
+  const [events, setEvents] = useState(null)
+
+  useEffect(() => {
+    if (!live && !done) return
+    fetchMatchEvents(m.home, m.away, m.status).then(setEvents).catch(() => {})
+    if (!live) return
+    const t = setInterval(() => fetchMatchEvents(m.home, m.away, m.status).then(setEvents).catch(() => {}), 30_000)
+    return () => clearInterval(t)
+  }, [live, done, m.home, m.away, m.status])
+
   return (
     <div style={{
       background:'linear-gradient(135deg,#0d2040 0%,#0a1830 50%,#0d2040 100%)',
@@ -128,7 +140,22 @@ function FeaturedMatch({ m, onView }) {
         </div>
       </div>
 
-      <div style={{ marginTop:20, display:'flex', gap:10 }}>
+      {events?.goals?.length > 0 && (
+        <div style={{ marginTop:16, borderTop:`1px solid ${C.border}`, paddingTop:14, display:'flex', gap:8 }}>
+          <div style={{ flex:1 }}>
+            {events.goals.filter(e => e.team === m.home)
+              .sort((a,b) => parseInt(a.minute) - parseInt(b.minute))
+              .map((e,i) => <EventRow key={i} e={e} />)}
+          </div>
+          <div style={{ flex:1 }}>
+            {events.goals.filter(e => e.team === m.away)
+              .sort((a,b) => parseInt(a.minute) - parseInt(b.minute))
+              .map((e,i) => <EventRow key={i} e={e} right />)}
+          </div>
+        </div>
+      )}
+
+      <div style={{ marginTop:16, display:'flex', gap:10 }}>
         <button onClick={onView} style={{
           background: live ? C.red : C.accent, color:'#000', fontWeight:800,
           border:'none', borderRadius:20, padding:'8px 22px', cursor:'pointer', fontSize:13,
@@ -140,13 +167,33 @@ function FeaturedMatch({ m, onView }) {
   )
 }
 
+// ── Goal row ──────────────────────────────────────────────────────────────────
+function EventRow({ e, right }) {
+  const icon = e.type === 'OWN_GOAL' ? '⚽ OG' : e.type === 'PENALTY' ? '⚽ P' : '⚽'
+  return (
+    <div style={{ display:'flex', alignItems:'center', gap:4, fontSize:11, color:C.muted, marginBottom:2,
+      justifyContent: right ? 'flex-end' : 'flex-start' }}>
+      {right
+        ? <><span style={{color:C.dim}}>{e.minute}'</span><span style={{fontWeight:600,color:'white'}}>{e.scorer}</span><span>{icon}</span></>
+        : <><span>{icon}</span><span style={{fontWeight:600,color:'white'}}>{e.scorer}</span><span style={{color:C.dim}}>{e.minute}'</span></>
+      }
+    </div>
+  )
+}
+
 // ── Result score card ─────────────────────────────────────────────────────────
 function ScoreCard({ m }) {
   const homeWin = m.hs > m.as, awayWin = m.as > m.hs
+  const [events, setEvents] = useState(null)
+
+  useEffect(() => {
+    fetchMatchEvents(m.home, m.away, 'finished').then(setEvents).catch(() => {})
+  }, [m.home, m.away])
+
   return (
     <div style={{
       background:C.card, border:`1px solid ${C.border}`, borderRadius:12,
-      padding:'14px 16px',
+      padding:'14px 16px', marginBottom:8,
     }}>
       <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:10 }}>
         <span style={{ fontSize:10, fontWeight:700, color:C.accent, letterSpacing:.5 }}>GROUP {m.grp}</span>
@@ -165,6 +212,20 @@ function ScoreCard({ m }) {
           <span style={{ fontSize:18 }}>{F[m.away] || '🏳️'}</span>
         </div>
       </div>
+      {events?.goals?.length > 0 && (
+        <div style={{ marginTop:8, borderTop:`1px solid ${C.border}`, paddingTop:8, display:'flex', gap:8 }}>
+          <div style={{flex:1}}>
+            {events.goals.filter(e => e.team === m.home)
+              .sort((a,b) => parseInt(a.minute) - parseInt(b.minute))
+              .map((e,i) => <EventRow key={i} e={e} />)}
+          </div>
+          <div style={{flex:1}}>
+            {events.goals.filter(e => e.team === m.away)
+              .sort((a,b) => parseInt(a.minute) - parseInt(b.minute))
+              .map((e,i) => <EventRow key={i} e={e} right />)}
+          </div>
+        </div>
+      )}
     </div>
   )
 }

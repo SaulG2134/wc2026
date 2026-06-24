@@ -19,7 +19,7 @@ export default function Matches({ matches, onRefresh, loading }) {
   // If live games appear after initial render, jump to live tab
   useEffect(() => {
     if (hasLive && filter === 'upcoming') setFilter('live')
-  }, [hasLive])
+  }, [hasLive, filter])
 
   const live    = matches.filter(m => m.status === 'live')
   const list    = matches.filter(m => filter === 'all' ? true : m.status === filter)

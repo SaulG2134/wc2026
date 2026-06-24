@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { C } from './constants.js'
-import { apiFetch, mapStandings, mapMatches, mapKnockout, mergeRounds } from './api.js'
+import { mergeRounds } from './api.js'
 import { loadUserData, saveUserData, migrateAnonData } from './lib/userData.js'
 import { supabase } from './lib/supabase.js'
 import Nav           from './components/Nav.jsx'
@@ -78,20 +78,18 @@ export default function App() {
     saveUserData(followed, preds)
   }, [followed, preds, dataLoaded])
 
-  // ── Fetch match + standings data via serverless function ─────────────────
+  // ── Fetch match + standings data via worldcup26.ir ───────────────────────
   const fetchAll = useCallback(async () => {
     setLoading(true)
     setError(null)
     try {
-      const [standingsData, matchesData] = await Promise.all([
-        apiFetch('/v4/competitions/WC/standings'),
-        apiFetch('/v4/competitions/WC/matches'),
-      ])
-      setGroups(mapStandings(standingsData))
-      setMatches(mapMatches(matchesData))
-      const newRounds = mapKnockout(matchesData)
+      const res  = await fetch('/api/wc26')
+      if (!res.ok) throw new Error(`${res.status}`)
+      const data = await res.json()
+      setGroups(data.standings)
+      setMatches(data.matches)
       setRounds(prev => {
-        const merged = mergeRounds(prev, newRounds)
+        const merged = mergeRounds(prev, data.rounds ?? [])
         try { localStorage.setItem('wc26_bracket', JSON.stringify(merged)) } catch {}
         return merged
       })

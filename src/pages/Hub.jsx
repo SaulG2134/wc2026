@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { C, F } from '../constants.js'
 import GroupCard from '../components/GroupCard.jsx'
+import MatchCard from '../components/MatchCard.jsx'
 import { useFollowedMatches } from '../hooks/useFollowedMatches.js'
 
 // ── Section header with optional badge ───────────────────────────────────────
@@ -22,106 +23,6 @@ function SectionHeader({ title, count, label, live: isLive }) {
   )
 }
 
-// ── Match event row (goal / card) ─────────────────────────────────────────────
-function EventRow({ e, right }) {
-  const isGoal    = 'scorer' in e
-  const icon = isGoal
-    ? (e.type === 'OWN_GOAL' ? '⚽ OG' : e.type === 'PENALTY' ? '⚽ P' : '⚽')
-    : (e.card === 'RED_CARD' ? '🟥' : e.card === 'YELLOW_RED_CARD' ? '🟥' : '🟨')
-
-  const name = isGoal ? e.scorer : e.player
-
-  return (
-    <div style={{
-      display: 'flex', alignItems: 'center', gap: 5,
-      justifyContent: right ? 'flex-end' : 'flex-start',
-      fontSize: 11, color: C.muted, marginBottom: 4,
-    }}>
-      {right ? (
-        <>
-          <span style={{ color: C.dim }}>{e.minute}'</span>
-          <span style={{ fontWeight: 600, color: 'white' }}>{name}</span>
-          <span>{icon}</span>
-        </>
-      ) : (
-        <>
-          <span>{icon}</span>
-          <span style={{ fontWeight: 600, color: 'white' }}>{name}</span>
-          <span style={{ color: C.dim }}>{e.minute}'</span>
-        </>
-      )}
-    </div>
-  )
-}
-
-// ── Unified match card (upcoming, live, finished) ─────────────────────────────
-function MatchCard({ m }) {
-  const isLive = m.status === 'live'
-  const isDone = m.status === 'finished'
-  const hasScore = isLive || isDone
-
-  return (
-    <div style={{
-      background: C.card2, borderRadius: 10, padding: '14px 18px',
-      border: `1px solid ${isLive ? C.red + '55' : C.border}`, marginBottom: 8,
-    }}>
-      {/* Top row */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: isDone ? 10 : 0, alignItems: 'center' }}>
-        <span style={{ fontSize: 10, fontWeight: 700, color: C.accent, letterSpacing: 0.5 }}>GROUP {m.grp}</span>
-        {isDone && <span style={{ fontSize: 10, fontWeight: 800, color: C.muted, background: C.border, padding: '2px 8px', borderRadius: 4, letterSpacing: 1 }}>FT</span>}
-        {!isDone && (
-          <span style={{ fontSize: 10, fontWeight: 700, color: isLive ? C.red : C.accent }}>
-            {isLive ? `● LIVE${m.minute ? ` ${m.minute}'` : ''}` : `${m.date} · ${m.time}`}
-          </span>
-        )}
-      </div>
-
-      {/* Teams + score */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginTop: isDone ? 0 : 10 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1, minWidth: 0 }}>
-          <span style={{ fontSize: isDone ? 22 : 20, flexShrink: 0 }}>{F[m.home] || '🏳️'}</span>
-          <span style={{ fontWeight: isDone ? 700 : 600, fontSize: isDone ? 15 : 14, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{m.home}</span>
-        </div>
-
-        {hasScore
-          ? <span style={{ fontWeight: 900, fontSize: isDone ? 22 : 18, color: isLive ? C.red : 'white', letterSpacing: isDone ? 2 : 0, minWidth: isDone ? 64 : 44, textAlign: 'center', flexShrink: 0 }}>
-              {isDone ? `${m.hs} – ${m.as}` : `${m.hs}–${m.as}`}
-            </span>
-          : <span style={{ fontSize: 12, color: C.dim, minWidth: 24, textAlign: 'center', flexShrink: 0 }}>VS</span>
-        }
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1, justifyContent: 'flex-end', minWidth: 0 }}>
-          <span style={{ fontWeight: isDone ? 700 : 600, fontSize: isDone ? 15 : 14, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{m.away}</span>
-          <span style={{ fontSize: isDone ? 22 : 20, flexShrink: 0 }}>{F[m.away] || '🏳️'}</span>
-        </div>
-      </div>
-
-      {/* Match events (finished only) */}
-      {isDone && (m.goals?.length > 0 || m.bookings?.length > 0) && (
-        <div style={{ marginTop: 12, borderTop: `1px solid ${C.border}`, paddingTop: 10, display: 'flex', gap: 12 }}>
-          {/* Home events */}
-          <div style={{ flex: 1 }}>
-            {[...(m.goals || []), ...(m.bookings || [])]
-              .filter(e => e.team === m.home)
-              .sort((a, b) => parseInt(a.minute) - parseInt(b.minute))
-              .map((e, i) => <EventRow key={i} e={e} />)}
-          </div>
-          {/* Away events */}
-          <div style={{ flex: 1, textAlign: 'right' }}>
-            {[...(m.goals || []), ...(m.bookings || [])]
-              .filter(e => e.team === m.away)
-              .sort((a, b) => parseInt(a.minute) - parseInt(b.minute))
-              .map((e, i) => <EventRow key={i} e={e} right />)}
-          </div>
-        </div>
-      )}
-
-      {isDone && m.venue && (
-        <div style={{ marginTop: 8, fontSize: 11, color: C.dim }}>📍 {m.venue}</div>
-      )}
-    </div>
-  )
-}
 
 // ── Main Hub page ─────────────────────────────────────────────────────────────
 /**
