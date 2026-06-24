@@ -42,6 +42,12 @@ export default async function handler(req, res) {
     headers: { 'X-Auth-Token': key },
   })
 
+  // If rate limited, serve stale cache if available rather than erroring
+  if (response.status === 429 && cache[path]) {
+    res.setHeader('X-Cache', 'STALE')
+    return res.status(200).json(cache[path].data)
+  }
+
   const data = await response.json()
 
   // Only cache successful responses

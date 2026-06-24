@@ -115,7 +115,8 @@ export default function App() {
       })
       setLastUpdated(new Date())
     } catch (e) {
-      setError(e.message)
+      // Only show error if we have no data to display — otherwise fail silently
+      if (matches.length === 0) setError(e.message)
     } finally {
       setLoading(false)
     }
