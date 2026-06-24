@@ -27,7 +27,7 @@ export const NORM = {
   'Korea Republic':'South Korea','Korea, Republic of':'South Korea',
   'Czechia':'Czech Republic',
   'United States':'USA','United States of America':'USA',
-  'Bosnia and Herzegovina':'Bosnia','Bosnia & Herzegovina':'Bosnia',
+  'Bosnia and Herzegovina':'Bosnia','Bosnia & Herzegovina':'Bosnia','Bosnia-Herzegovina':'Bosnia','Bosnia Herzegovina':'Bosnia',
   "Côte d'Ivoire":'Ivory Coast',"Cote d'Ivoire":'Ivory Coast',
   'Congo DR':'DR Congo','Democratic Republic of Congo':'DR Congo',
   'Congo, the Democratic Republic of the':'DR Congo',
