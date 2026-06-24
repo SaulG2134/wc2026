@@ -121,7 +121,11 @@ export default function App() {
           .grid-3col      { grid-template-columns: 1fr 1fr !important; }
           .grid-2col-wide { grid-template-columns: 1fr !important; }
           .hero-title     { font-size: 40px !important; }
-          .hero-inner     { padding: 28px 20px 24px !important; }
+          .hero-inner     { padding: 24px 18px 20px !important; }
+          .stats-bar      { padding: 12px 18px !important; flex-wrap: wrap !important; gap: 8px !important; }
+          .stats-bar > div { padding: 0 12px !important; border-right: none !important; }
+          .hub-layout     { grid-template-columns: 1fr !important; }
+          .hero-live-box  { min-width: 0 !important; width: 100% !important; }
         }
         @media (max-width: 480px) {
           .grid-3col { grid-template-columns: 1fr !important; }

@@ -146,7 +146,7 @@ export default function Hub({ groups, matches, followed, setFollowed }) {
       <h1 style={{ margin: '0 0 6px', fontSize: 32, fontWeight: 900 }}>My Favorites</h1>
       <p style={{ color: C.muted, marginBottom: 28, fontSize: 14 }}>Follow your teams to track fixtures and results</p>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '320px 1fr', gap: 24, alignItems: 'start' }}>
+      <div className="hub-layout" style={{ display: 'grid', gridTemplateColumns: '320px 1fr', gap: 24, alignItems: 'start' }}>
 
         {/* ── LEFT PANEL ── */}
         <div>
@@ -244,7 +244,7 @@ export default function Hub({ groups, matches, followed, setFollowed }) {
               {upcoming.length > 0 && (
                 <div style={{ marginBottom: 28 }}>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
-                    <h2 style={{ margin: 0, fontSize: 16, fontWeight: 700 }}>📅 Followed Fixtures</h2>
+                    <h2 style={{ margin: 0, fontSize: 16, fontWeight: 700 }}>Followed Fixtures</h2>
                     <span style={{ fontSize: 12, background: C.card2, border: `1px solid ${C.border}`, padding: '2px 10px', borderRadius: 20, color: C.muted, fontWeight: 600 }}>
                       {upcoming.length} {upcoming.length === 1 ? 'Game' : 'Games'}
                     </span>
@@ -257,7 +257,7 @@ export default function Hub({ groups, matches, followed, setFollowed }) {
               {finished.length > 0 && (
                 <div>
                   <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
-                    <h2 style={{ margin: 0, fontSize: 16, fontWeight: 700 }}>⚡ Recent Results</h2>
+                    <h2 style={{ margin: 0, fontSize: 16, fontWeight: 700 }}>Recent Results</h2>
                     <span style={{ fontSize: 12, background: C.card2, border: `1px solid ${C.border}`, padding: '2px 10px', borderRadius: 20, color: C.muted, fontWeight: 600 }}>
                       {finished.length} Finished
                     </span>

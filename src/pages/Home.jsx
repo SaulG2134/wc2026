@@ -223,13 +223,13 @@ export default function Home({ setTab, groups, matches }) {
                   VIEW MATCHES
                 </button>
                 <button onClick={() => setTab('predictor')} style={{ background:'rgba(255,255,255,.06)', color:'white', fontWeight:600, border:'1px solid rgba(255,255,255,.15)', borderRadius:24, padding:'11px 26px', cursor:'pointer', fontSize:13 }}>
-                  ⚡ PREDICTOR
+                  PREDICTOR
                 </button>
               </div>
             </div>
 
             {/* Right: live status */}
-            <div style={{ minWidth:240 }}>
+            <div className="hero-live-box" style={{ minWidth:240 }}>
               {live.length > 0 ? (
                 <div style={{ background:'rgba(239,68,68,.1)', border:`1px solid ${C.red}55`, borderRadius:14, padding:'18px 20px' }}>
                   <div style={{ display:'flex', alignItems:'center', gap:8, marginBottom:10 }}>
@@ -258,7 +258,7 @@ export default function Home({ setTab, groups, matches }) {
         </div>
 
         {/* Stats bar */}
-        <div style={{ borderTop:`1px solid ${C.border}`, padding:'16px 48px', display:'flex', gap:0, background:'rgba(0,0,0,.2)' }}>
+        <div className="stats-bar" style={{ borderTop:`1px solid ${C.border}`, padding:'16px 48px', display:'flex', gap:0, background:'rgba(0,0,0,.2)' }}>
           <Stat value="48" label="TEAMS" />
           <Stat value="12" label="GROUPS" />
           <Stat value="104" label="MATCHES" />
