@@ -127,10 +127,24 @@ export default function App() {
 
   useEffect(() => {
     fetchAll()
-    // Poll every 30s during live games, 60s otherwise
-    const interval = hasLive ? 30_000 : 60_000
-    const t = setInterval(fetchAll, interval)
-    return () => clearInterval(t)
+    // Poll every 60s during live games, 120s otherwise
+    const interval = hasLive ? 60_000 : 120_000
+    let t = setInterval(fetchAll, interval)
+
+    // Pause polling when tab is hidden, resume + refetch when visible again
+    const onVisibility = () => {
+      if (document.hidden) {
+        clearInterval(t)
+      } else {
+        fetchAll()
+        t = setInterval(fetchAll, interval)
+      }
+    }
+    document.addEventListener('visibilitychange', onVisibility)
+    return () => {
+      clearInterval(t)
+      document.removeEventListener('visibilitychange', onVisibility)
+    }
   }, [fetchAll, hasLive])
 
   const live = matches.filter(m => m.status === 'live')
