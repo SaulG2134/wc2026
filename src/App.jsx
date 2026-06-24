@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { C } from './constants.js'
 import { apiFetch, mapStandings, mapMatches, mapKnockout } from './api.js'
 import { loadUserData, saveUserData, migrateAnonData } from './lib/userData.js'
@@ -48,6 +48,7 @@ export default function App() {
   const [preds,       setPreds]       = useState({})
   const [dataLoaded,  setDataLoaded]  = useState(false)
   const [user,        setUser]        = useState(null)
+  const hasData = useRef(false)
 
   // ── Auth state listener ───────────────────────────────────────────────────
   useEffect(() => {
@@ -113,10 +114,10 @@ export default function App() {
         try { localStorage.setItem('wc26_bracket', JSON.stringify(merged)) } catch {}
         return merged
       })
+      hasData.current = true
       setLastUpdated(new Date())
     } catch (e) {
-      // Only show error if we have no data to display — otherwise fail silently
-      if (matches.length === 0) setError(e.message)
+      if (!hasData.current) setError(e.message)
     } finally {
       setLoading(false)
     }
