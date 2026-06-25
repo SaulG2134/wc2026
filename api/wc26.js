@@ -126,6 +126,17 @@ export default async function handler(req, res) {
     const json = await r.json()
     const games = json?.games ?? (Array.isArray(json) ? json : [])
 
+    // Sort all games chronologically so upcoming[0] is always the next match
+    const parseLocalDate = d => {
+      if (!d) return 0
+      const [datePart, timePart = '0:00'] = d.split(' ')
+      const parts = datePart.split('/')
+      const mo = parseInt(parts[0]), day = parseInt(parts[1]), yr = parts[2] ? parseInt(parts[2]) : 2026
+      const [h, m] = timePart.split(':').map(Number)
+      return new Date(yr, mo - 1, day, h, m).getTime()
+    }
+    games.sort((a, b) => parseLocalDate(a.local_date) - parseLocalDate(b.local_date))
+
     const matches  = games.filter(g => g.type === 'group').map(mapGame)
     const standings = computeStandings(games)
 
