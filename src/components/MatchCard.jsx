@@ -16,72 +16,96 @@ function EventRow({ e, right }) {
   )
 }
 
-// ── Full timeline view ────────────────────────────────────────────────────────
-function Timeline({ goals, home, away, live }) {
-  const sorted = [...goals].sort((a, b) => {
-    const am = parseInt(a.minute), bm = parseInt(b.minute)
-    return am - bm
-  })
-
-  if (sorted.length === 0) {
-    return (
-      <div style={{ textAlign:'center', padding:'16px 0', color:C.dim, fontSize:12 }}>
-        {live ? 'No goals yet' : 'No goal data available'}
+// ── Timeline cap (kickoff / full time) ───────────────────────────────────────
+function TimelineCap({ label, sub, color }) {
+  return (
+    <div style={{ display:'grid', gridTemplateColumns:'1fr 56px 1fr', alignItems:'center', marginBottom:4 }}>
+      <div />
+      <div style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:2 }}>
+        <div style={{
+          height:22, borderRadius:11, padding:'0 8px',
+          background: color + '22', border:`1.5px solid ${color}`,
+          display:'inline-flex', alignItems:'center', justifyContent:'center',
+          fontSize:9, fontWeight:800, color, letterSpacing:.5, whiteSpace:'nowrap',
+        }}>
+          {label}
+        </div>
+        {sub && <span style={{ fontSize:9, color:C.dim, fontWeight:600 }}>{sub}</span>}
       </div>
-    )
-  }
+      <div />
+    </div>
+  )
+}
+
+// ── Full timeline view ────────────────────────────────────────────────────────
+function Timeline({ goals, home, away, live, m }) {
+  const parseMin = min => String(min).split('+').reduce((s, p) => s + parseInt(p || 0), 0)
+
+  const sorted = [...goals].sort((a, b) => parseMin(a.minute) - parseMin(b.minute))
+
+  // FT minute: use latest goal minute if it exists, otherwise default to 90
+  const lastMin = sorted.length > 0 ? sorted[sorted.length - 1].minute : null
+  const ftLabel = lastMin && parseMin(lastMin) > 90 ? `90+${parseMin(lastMin) - 90}'` : "90'"
+
+  const connector = <div style={{ display:'grid', gridTemplateColumns:'1fr 56px 1fr', marginBottom:4 }}>
+    <div /><div style={{ display:'flex', justifyContent:'center' }}><div style={{ width:1, height:10, background:C.border }} /></div><div />
+  </div>
 
   return (
     <div style={{ padding:'4px 0' }}>
-      {sorted.map((e, i) => {
-        const isHome = e.team === home
-        const icon   = e.type === 'OWN_GOAL' ? '⚽' : e.type === 'PENALTY' ? '⚽' : '⚽'
-        const label  = e.type === 'OWN_GOAL' ? ' (OG)' : e.type === 'PENALTY' ? ' (P)' : ''
-        const dotColor = isHome ? C.accent : C.red
-
-        return (
-          <div key={i} style={{ display:'grid', gridTemplateColumns:'1fr 56px 1fr', alignItems:'center', marginBottom:10 }}>
-            {/* Home side */}
-            <div style={{ display:'flex', alignItems:'center', justifyContent:'flex-end', gap:6, paddingRight:8 }}>
-              {isHome && (
-                <>
-                  <span style={{ fontSize:12, fontWeight:700, color:'white' }}>{e.scorer}{label}</span>
-                  <span style={{ fontSize:14 }}>{icon}</span>
-                </>
-              )}
-            </div>
-
-            {/* Centre: dot + line */}
-            <div style={{ display:'flex', flexDirection:'column', alignItems:'center', position:'relative' }}>
-              {i > 0 && (
-                <div style={{ width:1, height:10, background:C.border, marginBottom:2 }} />
-              )}
-              <div style={{
-                width:40, height:22, borderRadius:11,
-                background: dotColor + '22',
-                border:`1.5px solid ${dotColor}`,
-                display:'flex', alignItems:'center', justifyContent:'center',
-                fontSize:10, fontWeight:800, color: dotColor,
-              }}>
-                {e.minute}'
-              </div>
-              {i < sorted.length - 1 && (
-                <div style={{ width:1, height:10, background:C.border, marginTop:2 }} />
-              )}
-            </div>
-
-            {/* Away side */}
-            <div style={{ display:'flex', alignItems:'center', justifyContent:'flex-start', gap:6, paddingLeft:8 }}>
-              {!isHome && (
-                <>
-                  <span style={{ fontSize:14 }}>{icon}</span>
-                  <span style={{ fontSize:12, fontWeight:700, color:'white' }}>{e.scorer}{label}</span>
-                </>
-              )}
-            </div>
+      {/* KICKOFF */}
+      <TimelineCap label="KICK OFF" color={C.green} />
+      {sorted.length === 0
+        ? <div style={{ textAlign:'center', padding:'12px 0', color:C.dim, fontSize:12 }}>
+            {live ? 'No goals yet' : 'No goals'}
           </div>
-        )
-      })}
+        : sorted.map((e, i) => {
+            const isHome   = e.team === home
+            const icon     = '⚽'
+            const label    = e.type === 'OWN_GOAL' ? ' (OG)' : e.type === 'PENALTY' ? ' (P)' : ''
+            const dotColor = isHome ? C.accent : C.red
+
+            return (
+              <div key={i}>
+                {connector}
+                <div style={{ display:'grid', gridTemplateColumns:'1fr 56px 1fr', alignItems:'center', marginBottom:4 }}>
+                  {/* Home side */}
+                  <div style={{ display:'flex', alignItems:'center', justifyContent:'flex-end', gap:6, paddingRight:8 }}>
+                    {isHome && (
+                      <><span style={{ fontSize:12, fontWeight:700, color:'white' }}>{e.scorer}{label}</span><span style={{ fontSize:14 }}>{icon}</span></>
+                    )}
+                  </div>
+
+                  {/* Minute bubble */}
+                  <div style={{ display:'flex', justifyContent:'center' }}>
+                    <div style={{
+                      width:40, height:22, borderRadius:11,
+                      background: dotColor + '22', border:`1.5px solid ${dotColor}`,
+                      display:'flex', alignItems:'center', justifyContent:'center',
+                      fontSize:10, fontWeight:800, color: dotColor,
+                    }}>
+                      {e.minute}'
+                    </div>
+                  </div>
+
+                  {/* Away side */}
+                  <div style={{ display:'flex', alignItems:'center', justifyContent:'flex-start', gap:6, paddingLeft:8 }}>
+                    {!isHome && (
+                      <><span style={{ fontSize:14 }}>{icon}</span><span style={{ fontSize:12, fontWeight:700, color:'white' }}>{e.scorer}{label}</span></>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )
+          })
+      }
+
+      {/* FULL TIME / LIVE */}
+      {connector}
+      {live
+        ? <TimelineCap label={m.minute ? `${m.minute}'` : 'LIVE'} color={C.red} />
+        : <TimelineCap label="FT" color={C.muted} />
+      }
     </div>
   )
 }
@@ -211,7 +235,7 @@ export default function MatchCard({ m }) {
           </div>
 
           {events
-            ? <Timeline goals={events.goals} home={m.home} away={m.away} live={live} />
+            ? <Timeline goals={events.goals} home={m.home} away={m.away} live={live} m={m} />
             : <div style={{ textAlign:'center', color:C.dim, fontSize:12, padding:'12px 0' }}>Loading…</div>
           }
         </div>
