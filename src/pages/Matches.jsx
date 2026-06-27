@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { C } from '../constants.js'
 import MatchCard from '../components/MatchCard.jsx'
 
@@ -15,11 +15,15 @@ const FILTERS = [
 export default function Matches({ matches, onRefresh, loading }) {
   const hasLive = matches.some(m => m.status === 'live')
   const [filter, setFilter] = useState(() => hasLive ? 'live' : 'upcoming')
+  const autoSwitched = useRef(false)
 
-  // If live games appear after initial render, jump to live tab
+  // Auto-switch to live only once when live games first appear
   useEffect(() => {
-    if (hasLive && filter === 'upcoming') setFilter('live')
-  }, [hasLive, filter])
+    if (hasLive && !autoSwitched.current) {
+      autoSwitched.current = true
+      setFilter('live')
+    }
+  }, [hasLive])
 
   const live    = matches.filter(m => m.status === 'live')
   const list    = matches.filter(m => filter === 'all' ? true : m.status === filter)
