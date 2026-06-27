@@ -16,10 +16,9 @@ function GroupPreview({ group, onView }) {
       {/* Header */}
       <div style={{ padding:'10px 14px', borderBottom:`1px solid ${C.border}`, display:'flex', alignItems:'center', justifyContent:'space-between' }}>
         <div style={{ display:'flex', alignItems:'center', gap:8 }}>
-          <div style={{ width:22, height:22, borderRadius:6, background:C.accent, color:'#000', fontWeight:800, fontSize:12, display:'flex', alignItems:'center', justifyContent:'center' }}>
-            {group.id.replace('Group ', '')}
+          <div style={{ borderRadius:6, background:C.accent, color:'#000', fontWeight:800, fontSize:12, display:'inline-flex', alignItems:'center', justifyContent:'center', padding:'3px 8px' }}>
+            GROUP {group.id.replace('Group ', '')}
           </div>
-          <span style={{ fontWeight:700, fontSize:13 }}> {group.id}</span>
         </div>
         <span style={{ fontSize:10, color:C.dim, fontWeight:600, letterSpacing:.5 }}>PTS</span>
       </div>
