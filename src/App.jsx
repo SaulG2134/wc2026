@@ -13,7 +13,14 @@ import Predictor from './pages/Predictor.jsx'
 import Bracket   from './pages/Bracket.jsx'
 
 export default function App() {
-  const [tab,         setTab]         = useState('home')
+  const TABS = ['home','hub','matches','groups','bracket','predictor']
+  const hashTab = window.location.hash.replace('#','')
+  const [tab, setTabRaw] = useState(TABS.includes(hashTab) ? hashTab : 'home')
+
+  const setTab = (t) => {
+    setTabRaw(t)
+    window.location.hash = t
+  }
   const [groups,      setGroups]      = useState([])
   const [matches,     setMatches]     = useState([])
   const [rounds,      setRounds]      = useState(() => {
