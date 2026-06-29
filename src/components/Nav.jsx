@@ -8,6 +8,7 @@ const LINKS = [
   { id:'matches',   label:'Matches' },
   { id:'groups',    label:'Groups' },
   { id:'bracket',   label:'Bracket' },
+  { id:'players',   label:'Players' },
   { id:'predictor', label:'AI Predictor' },
 ]
 

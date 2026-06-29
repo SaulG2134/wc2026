@@ -150,7 +150,7 @@ export default function MatchCard({ m }) {
       {/* Top row */}
       <div style={{ display:'flex', justifyContent:'space-between', marginBottom:10 }}>
         <span style={{ fontSize:11, fontWeight:700, color:C.accent, letterSpacing:.5 }}>
-          GROUP {m.grp}
+          {m.grp ? `GROUP ${m.grp}` : (m.stage || '').replace(/_/g,' ')}
         </span>
         <div style={{ display:'flex', alignItems:'center', gap:8 }}>
           <span style={{ fontSize:11, color:C.dim }}>{m.date}</span>

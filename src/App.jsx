@@ -11,9 +11,10 @@ import Matches   from './pages/Matches.jsx'
 import Hub       from './pages/Hub.jsx'
 import Predictor from './pages/Predictor.jsx'
 import Bracket   from './pages/Bracket.jsx'
+import Players   from './pages/Players.jsx'
 
 export default function App() {
-  const TABS = ['home','hub','matches','groups','bracket','predictor']
+  const TABS = ['home','hub','matches','groups','bracket','players','predictor']
   const hashTab = window.location.hash.replace('#','')
   const [tab, setTabRaw] = useState(TABS.includes(hashTab) ? hashTab : 'home')
 
@@ -191,6 +192,7 @@ export default function App() {
             {tab === 'hub'       && <Hub groups={groups} matches={matches} followed={followed} setFollowed={setFollowed} />}
             {tab === 'bracket'   && <Bracket rounds={rounds} loading={loading} />}
             {tab === 'predictor' && <Predictor matches={matches} groups={groups} />}
+            {tab === 'players'   && <Players />}
           </div>
         </ErrorBoundary>
       </main>

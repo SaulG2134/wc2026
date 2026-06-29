@@ -60,6 +60,16 @@ function mapGame(g) {
   const { date, time } = formatDate(g.local_date)
   const stageInfo = STAGE_BY_TYPE[g.type]
 
+  // Parse kickoff timestamp for client-side staleness check
+  let kickoffTs = 0
+  if (g.local_date) {
+    const [datePart, timePart = '0:00'] = g.local_date.split(' ')
+    const parts = datePart.split('/')
+    const mo = parseInt(parts[0]), day = parseInt(parts[1]), yr = parts[2] ? parseInt(parts[2]) : 2026
+    const [h, m] = timePart.split(':').map(Number)
+    kickoffTs = new Date(yr, mo - 1, day, h, m).getTime()
+  }
+
   return {
     id:      String(g.id),
     home,
@@ -74,6 +84,7 @@ function mapGame(g) {
     time,
     venue:   '',
     matchNum: parseInt(g.matchday) || null,
+    kickoffTs,
   }
 }
 
@@ -137,7 +148,7 @@ export default async function handler(req, res) {
     }
     games.sort((a, b) => parseLocalDate(a.local_date) - parseLocalDate(b.local_date))
 
-    const matches  = games.filter(g => g.type === 'group').map(mapGame)
+    const matches  = games.map(mapGame)
     const standings = computeStandings(games)
 
     // Knockout rounds

@@ -231,7 +231,8 @@ function ScoreCard({ m }) {
 
 // ── Main page ─────────────────────────────────────────────────────────────────
 export default function Home({ setTab, groups, matches }) {
-  const upcoming = matches.filter(m => m.status === 'upcoming')
+  const now = Date.now()
+  const upcoming = matches.filter(m => m.status === 'upcoming' && (!m.kickoffTs || m.kickoffTs > now - 2 * 60 * 60 * 1000))
   const recent   = matches.filter(m => m.status === 'finished').slice().reverse()
   const live     = matches.filter(m => m.status === 'live')
 

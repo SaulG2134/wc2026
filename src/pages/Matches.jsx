@@ -7,6 +7,7 @@ const FILTERS = [
   { id:'live',     label:'🔴 Live' },
   { id:'finished', label:'Finished' },
   { id:'upcoming', label:'Upcoming' },
+  { id:'knockout', label:'Knockout' },
 ]
 
 /**
@@ -26,7 +27,13 @@ export default function Matches({ matches, onRefresh, loading }) {
   }, [hasLive])
 
   const live    = matches.filter(m => m.status === 'live')
-  const list    = matches.filter(m => filter === 'all' ? true : m.status === filter)
+  const now  = Date.now()
+  const list = matches.filter(m => {
+    if (filter === 'all') return true
+    if (filter === 'knockout') return m.stage !== null
+    if (filter === 'upcoming') return m.status === 'upcoming' && (!m.kickoffTs || m.kickoffTs > now - 2 * 60 * 60 * 1000)
+    return m.status === filter
+  })
   const byDate  = list.reduce((acc, m) => {
     ;(acc[m.date] = acc[m.date] || []).push(m)
     return acc
@@ -44,7 +51,7 @@ export default function Matches({ matches, onRefresh, loading }) {
           {loading ? '↻ Refreshing…' : '↻ Refresh'}
         </button>
       </div>
-      <p style={{ color:C.muted, marginBottom:22, fontSize:14 }}>{matches.length} group stage matches</p>
+      <p style={{ color:C.muted, marginBottom:22, fontSize:14 }}>{matches.filter(m=>!m.stage).length} group stage · {matches.filter(m=>m.stage).length} knockout matches</p>
 
       {/* ── LIVE BANNER ── shown whenever there are live games, regardless of filter */}
       {live.length > 0 && filter !== 'live' && (
